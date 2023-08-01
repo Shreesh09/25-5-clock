@@ -31,9 +31,6 @@ class Timer {
         if(this.getPropertyValue("isRunning"))
             throw new Error("Timer already running!");
 
-        //console.log(state.work, state.break);
-        //let workTime = state.work;
-        //let breakTime  = state.break;
         this.setPropertyValue('isRunning', true);
         this.setPropertyValue("id",window.setInterval(() => {
              switch(status)

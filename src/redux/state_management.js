@@ -1,11 +1,11 @@
-import {SET, START, RESET, SET_DEFAULT, STOP, WORK, STATUS, BREAK} from "./action_constants";
+import {SET, START, RESET, SET_DEFAULT, STOP, WORK, STATUS} from "./action_constants";
 import {createStore} from "redux";
 import {createTimerInstance} from "./timer_control";
 import {resetTimer, setDefaultValue, startTimer, stopTimer} from "./actions";
 
 const defaultState = {
-    work: 10,
-    break: 5,
+    work: 25*60,
+    break: 5*60,
     status: WORK,
     default: () => defaultState,
 };
@@ -17,7 +17,6 @@ const timeReducer = (state = defaultState, action) => {
             if(timer.isRunning())
                 return state;
             else {
-                console.log("HELLO");
                 if (action.work < 0 || action.break < 0) {
                     console.log("Timer can't be less than 0");
                     return state;
