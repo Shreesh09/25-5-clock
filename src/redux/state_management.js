@@ -1,127 +1,100 @@
-import {SET, START, RESET, SET_DEFAULT, STOP, WORK, STATUS} from "./action_constants";
-import {createStore} from "redux";
 import {createTimerInstance} from "./timer_control";
-import {resetTimer, setDefaultValue, startTimer, stopTimer} from "./actions";
+import {configureStore, createSlice} from '@reduxjs/toolkit'
 
 const defaultState = {
     work: 25*60,
     break: 5*60,
-    status: WORK,
-    default: () => defaultState,
 };
 
-const timeReducer = (state = defaultState, action) => {
-    switch (action.type)
-    {
-        case SET_DEFAULT:
-            if(timer.isRunning())
-                return state;
-            else {
-                if (action.work < 0 || action.break < 0) {
+const initialState = {
+    work: 10,
+    break: 5*60,
+    status: 'work',
+};
+
+
+const timeSlice = createSlice({
+    name: 'time',
+    initialState: initialState,
+    reducers: {
+        setDefault: (state, action) => {
+            const {work, breakTime} = action.payload;
+            console.log(action.payload);
+            if(!timer.isRunning())
+            {
+                if (work < 0 || breakTime < 0) {
                     console.log("Timer can't be less than 0");
-                    return state;
-                } else if (action.work > 3600 || action.break > 3600) {
+                    return;
+                } else if (work > 3600 || breakTime > 3600) {
                     console.log("Timer can't be more than 60");
-                    return state;
+                    return;
                 }
 
                 let st = {};
-                st.work = defaultState.work === action.work ? state.work : action.work;
-                st.break = defaultState.break === action.break ? state.break : action.break;
+                st.work = defaultState.work === work ? state.work : work;
+                st.break = defaultState.break === breakTime ? state.break : breakTime;
 
-                defaultState.work = action.work;
-                defaultState.break = action.break;
-                return {
-                    work: st.work,
-                    break: st.break,
-                    status: state.status,
-                    default: state.default,
-                };
+                console.log(work);
+                console.log(breakTime);
+                defaultState.work = work;
+                defaultState.break = breakTime;
+                state.work = st.work;
+                state.break = st.break;
             }
-
-
-        case SET:
-            if(action.work < 0 || action.break < 0)
-            {
+        },
+        set: (state, action) => {
+            const {work, breakTime} = action.payload;
+            if (work < 0 || breakTime < 0) {
                 console.log("Timer can't be less than 0");
-                return state;
-            }
-            else if(action.work > 3600 || action.break > 3600)
-            {
+                return;
+            } else if (work > 3600 || breakTime > 3600) {
                 console.log("Timer can't be more than 60");
-                return state;
+                return;
             }
-            return ({
-                    work: action.work,
-                    break: action.break,
-                    status: state.status,
-                    default: state.default,
-                });
-
-        case STOP:
-            try{
+            state.work = work;
+            state.break = breakTime;
+        },
+        stop: () => {
+            try {
                 timer.stop();
-            }catch (e) {
+            } catch (e) {
                 console.log(e);
             }
-            return state;
-
-        case RESET:
-            try{
+        },
+        reset: (state) => {
+            try {
                 timer.stop();
-            }catch (e) {
+            } catch (e) {
                 console.log(e);
             }
-            return {
-            work: 25*60,
-            break: 5*60,
-            status: WORK,
-            default: state.default,
-        };
-
-        case START:
-            try{
-                timer.start(state.work, state.break, state.status, state.default);
-            }catch (e) {
+            state.work = 25 * 60;
+            state.break = 5 * 60;
+            state.status = 'work';
+        },
+        start: (state)=> {
+            try {
+                timer.start(state.work, state.break, state.status, () => (defaultState));
+            } catch (e) {
                 console.log(e);
             }
-            return state;
-
-        case STATUS:
-                return {
-                    work: state.work,
-                    break: state.work,
-                    status: action.status,
-                    default: state.default,
-                }
-
-        default: return state;
+        },
+        status: (state, action) => {
+            const {status} = action.payload;
+            state.status = status;
+        }
     }
-}
+});
 
-const store = createStore(timeReducer);
+export const store = configureStore({
+        reducer: {
+            time: timeSlice.reducer,
+        },
+    });
+
+export const {setDefault, set, stop, reset, start, status} = timeSlice.actions;
 const timer = createTimerInstance(store.dispatch);
 
-const passStateToProps = (state) => ({
-   work: state.work,
-   break: state.break,
-    status: state.status,
-    default: state.default,
-});
-
-const passActionsToProps = (dispatch) => ({
-   startTimer(){
-       dispatch(startTimer())
-   },
-    stopTimer() {
-        dispatch(stopTimer())
-    },
-    resetTimer() {
-        dispatch(resetTimer())
-    },
-    setDefaultValues(work, breakTime) {
-        dispatch(setDefaultValue(work, breakTime))
-    },
-});
-
-export {store, passStateToProps, passActionsToProps};
+export const selectWork = state => state.time.work;
+export const selectBreak = state => state.time.break;
+export const selectStatus = state => state.time.status;
+export const getDefault = () => (defaultState);

@@ -1,5 +1,18 @@
-import {changeStatus, setTimer} from "./actions";
-import {BREAK, WORK} from "./action_constants";
+
+function changeStatus (payload){
+    return {
+        type: 'time/status',
+        payload
+    };
+}
+
+function setTimer (payload){
+    return {
+        type: 'time/set',
+        payload
+    };
+}
+
 
 let instance;
 let globalState = {
@@ -35,22 +48,22 @@ class Timer {
         this.setPropertyValue("id",window.setInterval(() => {
              switch(status)
              {
-                 case WORK:
+                 case 'work':
                     if(workTime == '0') {
-                        this.getPropertyValue('dispatch')(changeStatus(BREAK));
-                        status = BREAK;
+                        this.getPropertyValue('dispatch')(changeStatus({status: 'break'}));
+                        status = 'break';
                     }
                     else
                         workTime--;
                     break;
-                 case BREAK:
+                 case 'break':
                      if(breakTime == '0')
                      {
                          let st = reset();
                          workTime = st.work;
                          breakTime = st.break;
-                         this.getPropertyValue('dispatch')(changeStatus(WORK))
-                         status = WORK;
+                         this.getPropertyValue('dispatch')(changeStatus({status: 'work'}))
+                         status = 'work';
                      }
                      else
                          breakTime--;
@@ -58,7 +71,7 @@ class Timer {
                  default:
              }
              console.log(workTime, breakTime);
-             this.getPropertyValue('dispatch')(setTimer(workTime, breakTime));
+             this.getPropertyValue('dispatch')(setTimer({work: workTime, breakTime: breakTime}));
          }, 1000));
     }
 

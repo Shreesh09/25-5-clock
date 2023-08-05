@@ -1,3 +1,7 @@
+:root {
+  --op: 0;
+}
+
 #background {
   position: absolute;
   top: 0;
@@ -7,21 +11,38 @@
   background-color: black;
 }
 
+#body::before {
+  position: absolute;
+  content: "";
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(45deg, rgb(172, 93, 92), rgb(224, 177, 171) 50%, rgb(190, 137, 137));
+  z-index: -1;
+  transition: opacity 0.5s linear;
+  opacity: var(--op);
+}
+
 #body {
+  z-index: 1;
+  background-image: linear-gradient(45deg, rgba(131, 129, 255, 0.63), rgba(201, 189, 247, 0.9) 50%, rgb(148, 137, 190));
+  overflow: hidden;
   color: white;
   font-weight: bold;
   font-family: Inter, sans-serif;
   position: absolute;
-  top: 0;
   left: 0;
+  top: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg, rgba(131, 129, 255, 0.63), rgba(201, 189, 247, 0.9) 50%, rgb(148, 137, 190));
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 #body #timer-box {
+  margin-top: 30%;
+  margin-bottom: 10%;
   background-color: rgba(0, 0, 0, 0.4);
   box-shadow: 4px 4px 2px 2px rgba(0, 0, 0, 0.4);
   border: 1px solid black;
@@ -31,10 +52,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 #body #timer-box #timer-left {
   margin: 0;
-  margin-top: 0px;
   -webkit-text-stroke-width: 1.5px;
   -webkit-text-stroke-color: black;
   color: white;
@@ -44,10 +65,41 @@
 }
 #body #timer-box #timer-label {
   margin: 0;
-  margin-top: 50px;
+  -webkit-text-stroke-width: 1.2px;
+  -webkit-text-stroke-color: black;
   font-weight: bolder;
   font-size: 30px;
   color: white;
+}
+#body .label {
+  height: 57px;
+  width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  align-items: center;
+  background-color: rgba(1, 1, 1, 0.75);
+  border: 3px solid white;
+  margin-top: 10px;
+  justify-content: end;
+  padding-right: 10%;
+}
+#body .label .label-name {
+  font-size: larger;
+  font-weight: bold;
+  position: absolute;
+  left: 10%;
+}
+#body .label .default-values {
+  border: 3px solid white;
+  padding: 7px;
+  margin: 0px -5px 0px -5px;
+}
+
+.icons {
+  color: white;
+  font-size: 28px;
 }
 
 /*# sourceMappingURL=clock_style.css.map */

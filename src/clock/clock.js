@@ -1,8 +1,20 @@
 import React from "react";
 import {TimerInstance} from "../redux/timer_control";
+import {useSelector, useDispatch} from "react-redux";
+import {
+    setDefault,
+    start,
+    stop,
+    reset, getDefault,
+} from "../redux/state_management";
+import {
+    selectWork,
+    selectBreak,
+    selectStatus,
+} from "../redux/state_management";
 import './clock_style.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faPause, faPlay, faStop} from "@fortawesome/free-solid-svg-icons";
+import {faArrowDown, faArrowUp, faPause, faPlay, faStop} from "@fortawesome/free-solid-svg-icons";
 
 function convertToMinutes(time)
 {
@@ -10,72 +22,78 @@ function convertToMinutes(time)
     let minutes = m < 10 ? `0${m}` : `${m}`;
     let s = time - (60 * m);
     let seconds = s < 10 ? `0${s}` : `${s}`;
-    return `${minutes}: ${seconds}`;
+    return `${minutes}:${seconds}`;
 }
 
-class Clock extends React.Component {
-    constructor(props) {
-        super(props);
-
-    }
-    handleStart = () => {
-        if(TimerInstance.isRunning())
-            this.props.stopTimer();
-        else
-            this.props.startTimer();
-    }
-
-    handleReset = () => {
-        this.props.resetTimer();
-        this.props.setDefaultValues(25*60, 5*60);
-    }
-
-    handleDecrement = (property) => {
-        switch (property) {
+const switchState = (status) => {
+    const body = document.getElementById('body');
+    if(body != null) {
+        let r  = document.querySelector(':root');
+        switch(status)
+        {
             case 'work':
-                return () => {this.props.setDefaultValues((this.props.default().work - 10), this.props.default().break)};
+                r.style.setProperty('--op', 0);
+                break;
             case 'break':
-                return ()=>{this.props.setDefaultValues((this.props.default().work), this.props.default().break - 10)};
-            default:
-        }
-        }
-
-    handleIncrement = (property) => {
-        switch (property) {
-            case 'work':
-                return () => {this.props.setDefaultValues((this.props.default().work + 10), this.props.default().break)};
-            case 'break':
-            return () => {this.props.setDefaultValues((this.props.default().work), this.props.default().break + 10)};
+                r.style.setProperty('--op', 1);
+                break;
             default:
         }
     }
+}
 
-    render() {
+export function Clock () {
+    const dispatch = useDispatch();
+    const status = useSelector(selectStatus);
+    const workTime = useSelector(selectWork);
+    const breakTime = useSelector(selectBreak);
+    const defaultVal = getDefault;
+    switchState(status);
        return(
            <div id="background">
            <div id="body">
                <div id="timer-box">
-                   <p id="timer-label">{this.props.status}</p>
-                   <p id={"timer-left"}>{convertToMinutes(this.props[this.props.status])}</p>
-                   <div onClick={this.handleStart} id="start-stop"><FontAwesomeIcon icon={faPlay} /><FontAwesomeIcon icon={faPause} /></div>
-                   <div onClick={this.handleReset} id={"reset"}><FontAwesomeIcon icon={faStop} /></div>
+                   <p id="timer-label">{useSelector(selectStatus)}</p>
+                   <p id={"timer-left"}>{convertToMinutes( status == 'work' ? workTime:breakTime)}</p>
+                   <div onClick={
+                       () => {
+                           if(!TimerInstance.isRunning())
+                            dispatch(start());
+                           else
+                               dispatch(stop());
+                       }
+                   } id="start-stop"><FontAwesomeIcon className="icons" icon={faPlay} /><FontAwesomeIcon  className="icons" icon={faPause} /></div>
+                   <div onClick={
+                       () => {
+                           dispatch(reset())
+                           dispatch(setDefault({work: 25 * 60, breakTime: 5 * 60}));
+                       }
+                   } id={"reset"}><FontAwesomeIcon className="icons" icon={faStop} /></div>
                </div>
                <div className="label" id={"session-box"}>
-                   <p id="session-label">Session Length</p>
-                   <div onClick={this.handleDecrement('work')} id="session-decrement">work -</div>
-                   <p id="session-length">{convertToMinutes(this.props.default().work)}</p>
-                   <div onClick={this.handleIncrement('work')} id="session-increment">work +</div>
+                   <p className="label-name" id="session-label">Session Length</p>
+                   <div onClick={
+                       () => {
+                           dispatch(setDefault({work: defaultVal().work - 60, breakTime: defaultVal().break}))}
+                   } id="session-decrement"><FontAwesomeIcon className="icons" icon={faArrowDown} /></div>
+                   <p className="default-values" id="session-length">{convertToMinutes(defaultVal().work)}</p>
+                   <div onClick={
+                       () => {dispatch(setDefault({work: defaultVal().work + 60, breakTime: defaultVal().break}))}
+                   } id="session-increment"><FontAwesomeIcon className="icons" icon={faArrowUp} /></div>
                </div>
                <div className="label"  id={"break-box"}>
-                   <p id="break-label">Break Length</p>
-                   <div onClick={this.handleDecrement('break')} id="break-decrement">break -</div>
-                   <p id="break-length">{convertToMinutes(this.props.default().break)}</p>
-                   <div onClick={this.handleIncrement('break')} id="break-increment">break +</div>
+                   <p className="label-name" id="break-label">Break Length</p>
+                   <div onClick={
+                       ()=>{dispatch(setDefault({work: defaultVal().work, breakTime: defaultVal().break-60}))}
+                   } id="break-decrement"><FontAwesomeIcon className="icons" icon={faArrowDown} /></div>
+                   <p className="default-values" id="break-length">{convertToMinutes(defaultVal().break)}</p>
+                   <div onClick={
+                       ()=>{dispatch(setDefault({work: defaultVal().work, breakTime: defaultVal().break+60}))}
+                   } id="break-increment"><FontAwesomeIcon className="icons" icon={faArrowUp} /></div>
                </div>
            </div>
            </div>
-       );
-    }
+       )
 }
 
 export default Clock;
