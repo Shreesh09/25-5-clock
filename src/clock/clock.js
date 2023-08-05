@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, {useContext, useDebugValue, useRef} from "react";
 import {TimerInstance} from "../redux/timer_control";
 import {useSelector, useDispatch} from "react-redux";
 import {
@@ -17,21 +17,25 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faArrowDown, faArrowUp, faPause, faPlay, faStop} from "@fortawesome/free-solid-svg-icons";
 import { createContext } from 'react';
 const propsContext = createContext({});
-function convertToMinutes(time)
+function useConvertToMinutes(time)
 {
     let m = Math.trunc(time / 60);
     let minutes = m < 10 ? `0${m}` : `${m}`;
     let s = time - (60 * m);
     let seconds = s < 10 ? `0${s}` : `${s}`;
+    useDebugValue("useConvertToMinutes");
     return `${minutes}:${seconds}`;
 }
 
-const switchState = (status) => {
-    const body = document.getElementById('body');
-    if(body != null) {
-        let r  = document.querySelector(':root');
-        switch(status)
-        {
+function Body ({children}) {
+    const context = useContext(propsContext);
+    const {dispatch, status, workTime, breakTime, defaultVal} = context;
+
+    const body = useRef(null);
+
+    if (body != null) {
+        let r = document.querySelector(':root');
+        switch (status) {
             case 'work':
                 r.style.setProperty('--op', 0);
                 break;
@@ -41,6 +45,12 @@ const switchState = (status) => {
             default:
         }
     }
+
+    return (
+        <div ref={body} id="body">
+            {children}
+        </div>
+    );
 }
 
 function TimerBox() {
@@ -49,7 +59,7 @@ function TimerBox() {
     return (
         <div id="timer-box">
             <p id="timer-label">{useSelector(selectStatus)}</p>
-            <p id={"timer-left"}>{convertToMinutes( status == 'work' ? workTime:breakTime)}</p>
+            <p id={"timer-left"}>{useConvertToMinutes( status == 'work' ? workTime:breakTime)}</p>
             <div onClick={
                 () => {
                     if(!TimerInstance.isRunning())
@@ -80,7 +90,7 @@ function Label ({type, dispatchInc, dispatchDec}) {
         <p className="label-name" id={`${type}-label`}>{`${title} Length`}</p>
         <div onClick={dispatchDec} id={`${type}-decrement`}><FontAwesomeIcon className="icons" icon={faArrowDown} />
         </div>
-        <p className="default-values" id="session-length">{convertToMinutes(type == 'session'?defaultVal().work:defaultVal().break)}</p>
+        <p className="default-values" id="session-length">{useConvertToMinutes(type == 'session'?defaultVal().work:defaultVal().break)}</p>
         <div onClick={dispatchInc} id={`${type}-increment`}><FontAwesomeIcon className="icons" icon={faArrowUp} /></div>
     </div>);
 }
@@ -95,11 +105,10 @@ export function Clock () {
     context.defaultVal = getDefault;
     const {dispatch,status,workTime,breakTime, defaultVal} = context;
 
-    switchState(status);
-       return(
+    return(
            <propsContext.Provider value={context}>
            <div id="background">
-           <div id="body">
+           <Body>
                <TimerBox/>
                <Label type={"session"}
                       dispatchInc={()=>{dispatch(setDefault({work: defaultVal().work+60, breakTime: defaultVal().break}))}}
@@ -109,7 +118,7 @@ export function Clock () {
                       dispatchInc={()=>{dispatch(setDefault({work: defaultVal().work, breakTime: defaultVal().break + 60}))}}
                       dispatchDec={()=>{dispatch(setDefault({work: defaultVal().work, breakTime: defaultVal().break - 60}))}}
                />
-           </div>
+           </Body>
            </div>
            </propsContext.Provider>
        )
