@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext} from "react";
 import {TimerInstance} from "../redux/timer_control";
 import {useSelector, useDispatch} from "react-redux";
 import {
@@ -15,7 +15,8 @@ import {
 import './clock_style.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faArrowDown, faArrowUp, faPause, faPlay, faStop} from "@fortawesome/free-solid-svg-icons";
-
+import { createContext } from 'react';
+const propsContext = createContext({});
 function convertToMinutes(time)
 {
     let m = Math.trunc(time / 60);
@@ -42,57 +43,75 @@ const switchState = (status) => {
     }
 }
 
-export function Clock () {
-    const dispatch = useDispatch();
-    const status = useSelector(selectStatus);
-    const workTime = useSelector(selectWork);
-    const breakTime = useSelector(selectBreak);
+function TimerBox() {
+    const context = useContext(propsContext);
+    const {dispatch,status,workTime,breakTime, defaultVal} = context;
+    return (
+        <div id="timer-box">
+            <p id="timer-label">{useSelector(selectStatus)}</p>
+            <p id={"timer-left"}>{convertToMinutes( status == 'work' ? workTime:breakTime)}</p>
+            <div onClick={
+                () => {
+                    if(!TimerInstance.isRunning())
+                        dispatch(start());
+                    else
+                        dispatch(stop());
+                }
+            } id="start-stop"><FontAwesomeIcon className="icons" icon={faPlay} /><FontAwesomeIcon  className="icons" icon={faPause} /></div>
+            <div onClick={
+                () => {
+                    dispatch(reset())
+                    dispatch(setDefault({work: 25 * 60, breakTime: 5 * 60}));
+                }
+            } id={"reset"}><FontAwesomeIcon className="icons" icon={faStop} /></div>
+        </div>
+    );
+}
+
+function Label ({type, dispatchInc, dispatchDec}) {
+    const title = type.split("").map((char, i) => {
+        if(i === 0)
+            return char.toUpperCase();
+        return char
+    }).join("");
     const defaultVal = getDefault;
+    return (
+    <div className="label" id={`${type}-box`}>
+        <p className="label-name" id={`${type}-label`}>{`${title} Length`}</p>
+        <div onClick={dispatchDec} id={`${type}-decrement`}><FontAwesomeIcon className="icons" icon={faArrowDown} />
+        </div>
+        <p className="default-values" id="session-length">{convertToMinutes(type == 'session'?defaultVal().work:defaultVal().break)}</p>
+        <div onClick={dispatchInc} id={`${type}-increment`}><FontAwesomeIcon className="icons" icon={faArrowUp} /></div>
+    </div>);
+}
+
+export function Clock () {
+
+    const context = useContext(propsContext);
+    context.dispatch = useDispatch();
+    context.status = useSelector(selectStatus);
+    context.workTime = useSelector(selectWork);
+    context.breakTime = useSelector(selectBreak);
+    context.defaultVal = getDefault;
+    const {dispatch,status,workTime,breakTime, defaultVal} = context;
+
     switchState(status);
        return(
+           <propsContext.Provider value={context}>
            <div id="background">
            <div id="body">
-               <div id="timer-box">
-                   <p id="timer-label">{useSelector(selectStatus)}</p>
-                   <p id={"timer-left"}>{convertToMinutes( status == 'work' ? workTime:breakTime)}</p>
-                   <div onClick={
-                       () => {
-                           if(!TimerInstance.isRunning())
-                            dispatch(start());
-                           else
-                               dispatch(stop());
-                       }
-                   } id="start-stop"><FontAwesomeIcon className="icons" icon={faPlay} /><FontAwesomeIcon  className="icons" icon={faPause} /></div>
-                   <div onClick={
-                       () => {
-                           dispatch(reset())
-                           dispatch(setDefault({work: 25 * 60, breakTime: 5 * 60}));
-                       }
-                   } id={"reset"}><FontAwesomeIcon className="icons" icon={faStop} /></div>
-               </div>
-               <div className="label" id={"session-box"}>
-                   <p className="label-name" id="session-label">Session Length</p>
-                   <div onClick={
-                       () => {
-                           dispatch(setDefault({work: defaultVal().work - 60, breakTime: defaultVal().break}))}
-                   } id="session-decrement"><FontAwesomeIcon className="icons" icon={faArrowDown} /></div>
-                   <p className="default-values" id="session-length">{convertToMinutes(defaultVal().work)}</p>
-                   <div onClick={
-                       () => {dispatch(setDefault({work: defaultVal().work + 60, breakTime: defaultVal().break}))}
-                   } id="session-increment"><FontAwesomeIcon className="icons" icon={faArrowUp} /></div>
-               </div>
-               <div className="label"  id={"break-box"}>
-                   <p className="label-name" id="break-label">Break Length</p>
-                   <div onClick={
-                       ()=>{dispatch(setDefault({work: defaultVal().work, breakTime: defaultVal().break-60}))}
-                   } id="break-decrement"><FontAwesomeIcon className="icons" icon={faArrowDown} /></div>
-                   <p className="default-values" id="break-length">{convertToMinutes(defaultVal().break)}</p>
-                   <div onClick={
-                       ()=>{dispatch(setDefault({work: defaultVal().work, breakTime: defaultVal().break+60}))}
-                   } id="break-increment"><FontAwesomeIcon className="icons" icon={faArrowUp} /></div>
-               </div>
+               <TimerBox/>
+               <Label type={"session"}
+                      dispatchInc={()=>{dispatch(setDefault({work: defaultVal().work+60, breakTime: defaultVal().break}))}}
+                      dispatchDec={()=>{dispatch(setDefault({work: defaultVal().work-60, breakTime: defaultVal().break}))}}
+               />
+               <Label type={"break"}
+                      dispatchInc={()=>{dispatch(setDefault({work: defaultVal().work, breakTime: defaultVal().break + 60}))}}
+                      dispatchDec={()=>{dispatch(setDefault({work: defaultVal().work, breakTime: defaultVal().break - 60}))}}
+               />
            </div>
            </div>
+           </propsContext.Provider>
        )
 }
 
