@@ -16,6 +16,9 @@ import './clock_style.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faArrowDown, faArrowRotateLeft, faArrowUp, faPause, faPlay, faStop} from "@fortawesome/free-solid-svg-icons";
 import { createContext } from 'react';
+import { CircularProgressbarWithChildren} from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+
 const propsContext = createContext({});
 function useConvertToMinutes(time)
 {
@@ -104,12 +107,31 @@ function StartStop () {
     );
 }
 
+function useProgress(status, workTime, breakTime, defaultVal)
+{
+    switch (status) {
+        case 'work':
+            return workTime/defaultVal().work*100;
+        case 'break':
+            return breakTime/defaultVal().break*100;
+    }
+}
+
 function TimerBox() {
     const context = useContext(propsContext);
     const {dispatch,status,workTime,breakTime, defaultVal} = context;
+    const progress = useProgress(status, workTime, breakTime, defaultVal);
+    const playSound = useRef(null);
+    if(progress === 0) {
+        playSound.current.currentTime=0;
+        playSound.current.play();
+    }
     return (
         <div id="timer-box">
+            <audio ref={playSound}  preload="auto" id="beep" src={"https://drive.google.com/uc?export=view&id=1wj3P8_oVrvuV7Q9Y7_16iMxqaVi-35nS"}></audio>
+            <CircularProgressbarWithChildren value={progress}>
             <p id={"timer-left"}>{useConvertToMinutes( status == 'work' ? workTime:breakTime)}</p>
+            </CircularProgressbarWithChildren>
             <StartStop/>
         </div>
     );
@@ -122,13 +144,18 @@ function Label ({type, dispatchInc, dispatchDec}) {
         return char
     }).join("");
     const defaultVal = getDefault;
+    let name =<p className="label-name" id={`${type}-label`}>{`${title} Length`}</p>;
+    if(type == 'break')
+        name = <p className="label-name" id={`${type}-label`}>&nbsp;&nbsp;&nbsp;&nbsp;{`${title} Length`}</p>;
     return (
     <div className="label" id={`${type}-box`}>
-        <p className="label-name" id={`${type}-label`}>{`${title} Length`}</p>
-        <div onClick={dispatchDec} id={`${type}-decrement`}><FontAwesomeIcon className="icons" icon={faArrowDown} />
+        {name}
+        <div id="def">
+            <div onClick={dispatchDec} id={`${type}-decrement`}><FontAwesomeIcon className="icons" icon={faArrowDown} />
+            </div>
+            <p className="default-values" id="session-length">{useConvertToMinutes(type == 'session'?defaultVal().work:defaultVal().break)}</p>
+            <div onClick={dispatchInc} id={`${type}-increment`}><FontAwesomeIcon className="icons" icon={faArrowUp} /></div>
         </div>
-        <p className="default-values" id="session-length">{useConvertToMinutes(type == 'session'?defaultVal().work:defaultVal().break)}</p>
-        <div onClick={dispatchInc} id={`${type}-increment`}><FontAwesomeIcon className="icons" icon={faArrowUp} /></div>
     </div>);
 }
 
@@ -147,13 +174,21 @@ export function Clock () {
            <div id="background">
            <Body>
                <div id={"box"}>
-               <TimerBox/>
+                        <TimerBox/>
                <div onClick={
                    () => {
+                       document.getElementById('start').classList.remove('invisible');
+                       document.getElementById('start').classList.remove('movePause');
+                       document.getElementById('pause').classList.remove('movePause');
+                       document.getElementById('pause').classList.add('invisible');
+                       document.getElementById('stop').classList.add('invisible');
+                       document.getElementById('stop').classList.remove('moveStop');
+                       document.getElementById('beep').currentTime = 0;
+                       document.getElementById('beep').pause();
                        dispatch(reset())
                        dispatch(setDefault({work: 25 * 60, breakTime: 5 * 60}));
                    }
-               } id={"reset"}><FontAwesomeIcon className="icons" icon={faArrowRotateLeft} /></div>
+               } id={"reset"}><FontAwesomeIcon id={"reset-icon"} className="icons" icon={faArrowRotateLeft} /></div>
                </div>
                <p id="timer-label">{status.toUpperCase()}</p>
                <Label type={"session"}

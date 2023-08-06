@@ -30,7 +30,7 @@
   overflow: hidden;
   color: white;
   font-weight: bold;
-  font-family: Inter, sans-serif;
+  font-family: "Inter", sans-serif;
   position: absolute;
   left: 0;
   top: 0;
@@ -46,10 +46,17 @@
   text-align: center;
   margin: 0;
   margin-bottom: 6%;
+  margin-top: 3%;
   -webkit-text-stroke-color: black;
   font-weight: bold;
   font-size: 40px;
   color: white;
+}
+#body .CircularProgressbar-path {
+  stroke: white;
+}
+#body .CircularProgressbar-trail {
+  stroke: rgba(0, 0, 0, 0.5);
 }
 #body #timer-box {
   margin-top: 30%;
@@ -73,7 +80,7 @@
   color: white;
   font-size: 55px;
   font-weight: bolder;
-  font-family: Inter, sans-serif;
+  font-family: "Inter", sans-serif;
 }
 #body .label {
   height: 57px;
@@ -86,14 +93,17 @@
   background-color: rgba(1, 1, 1, 0.75);
   border: 3px solid white;
   margin-top: 10px;
-  justify-content: end;
+  justify-content: space-evenly;
   padding-right: 10%;
 }
 #body .label .label-name {
   font-size: larger;
   font-weight: bold;
-  position: absolute;
-  left: 10%;
+}
+#body .label #def {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 #body .label .default-values {
   border: 3px solid white;
@@ -104,7 +114,8 @@
 #start-stop .icons {
   position: absolute;
   left: 50%;
-  transform: translate(-50%, 0%);
+  top: 30%;
+  transform: translate(-50%, 20%);
   color: black;
   padding: 10px;
   background-color: rgba(255, 255, 255, 0.5);
@@ -120,11 +131,12 @@
     margin-left: -10%;
   }
 }
-#reset {
-  position: relative;
-  margin-left: 100%;
-  margin-bottom: 10px;
-  margin-top: -30px;
+#reset-icon {
+  font-size: 60px;
+  position: absolute;
+  top: 2%;
+  left: 80%;
+  color: black;
 }
 
 #box {
@@ -160,6 +172,69 @@
   border-radius: 50%;
   color: white;
   font-size: 28px;
+}
+
+@media screen and (min-width: 588px) {
+  @keyframes slideLeftPause {
+    0% {
+      margin-left: 0;
+    }
+    100% {
+      margin-left: -5%;
+    }
+  }
+  .movePause {
+    margin-left: -5%;
+    animation: slideLeftPause 0.5s;
+  }
+  @keyframes slideRightStop {
+    0% {
+      margin-left: 0;
+    }
+    100% {
+      margin-left: 5%;
+    }
+  }
+  .moveStop {
+    margin-left: 5%;
+    animation: slideRightStop 0.5s;
+  }
+}
+@media screen and (min-width: 1035px) {
+  @keyframes slideLeftPause {
+    0% {
+      margin-left: 0;
+    }
+    100% {
+      margin-left: -3%;
+    }
+  }
+  .movePause {
+    margin-left: -3%;
+    animation: slideLeftPause 0.5s;
+  }
+  @keyframes slideRightStop {
+    0% {
+      margin-left: 0;
+    }
+    100% {
+      margin-left: 3%;
+    }
+  }
+  .moveStop {
+    margin-left: 3%;
+    animation: slideRightStop 0.5s;
+  }
+  #start-stop .icons {
+    top: 28%;
+  }
+  .label-name {
+    margin-left: 10%;
+  }
+  #reset-icon {
+    left: 95%;
+    top: 2%;
+  }
 }
 
 /*# sourceMappingURL=clock_style.css.map */

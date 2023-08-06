@@ -7,7 +7,7 @@ const defaultState = {
 };
 
 const initialState = {
-    work: 10,
+    work: 25*60,
     break: 5*60,
     status: 'work',
 };
@@ -22,7 +22,7 @@ const timeSlice = createSlice({
             console.log(action.payload);
             if(!timer.isRunning())
             {
-                if (work < 0 || breakTime < 0) {
+                if (work <= 0 || breakTime <= 0) {
                     console.log("Timer can't be less than 0");
                     return;
                 } else if (work > 3600 || breakTime > 3600) {
