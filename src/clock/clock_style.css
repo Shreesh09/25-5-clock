@@ -40,12 +40,23 @@
   flex-direction: column;
   align-items: center;
 }
+#body #timer-label {
+  background-color: rgba(0, 0, 0, 0.9);
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  margin-bottom: 6%;
+  -webkit-text-stroke-color: black;
+  font-weight: bold;
+  font-size: 40px;
+  color: white;
+}
 #body #timer-box {
   margin-top: 30%;
-  margin-bottom: 10%;
-  background-color: rgba(0, 0, 0, 0.4);
-  box-shadow: 4px 4px 2px 2px rgba(0, 0, 0, 0.4);
-  border: 1px solid black;
+  margin-bottom: 5%;
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 4px 4px 2px 2px rgba(0, 0, 0, 0.5);
+  border: 2px solid black;
   width: 250px;
   height: 250px;
   border-radius: 50%;
@@ -56,20 +67,13 @@
 }
 #body #timer-box #timer-left {
   margin: 0;
-  -webkit-text-stroke-width: 1.5px;
+  margin-top: -10%;
+  -webkit-text-stroke-width: 2.5px;
   -webkit-text-stroke-color: black;
   color: white;
-  font-size: 40px;
-  font-weight: bold;
-  font-family: Inter, sans-serif;
-}
-#body #timer-box #timer-label {
-  margin: 0;
-  -webkit-text-stroke-width: 1.2px;
-  -webkit-text-stroke-color: black;
+  font-size: 55px;
   font-weight: bolder;
-  font-size: 30px;
-  color: white;
+  font-family: Inter, sans-serif;
 }
 #body .label {
   height: 57px;
@@ -97,7 +101,63 @@
   margin: 0px -5px 0px -5px;
 }
 
+#start-stop .icons {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  color: black;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.5);
+  width: 35px;
+  height: 35px;
+}
+
+@keyframes slideLeftPause {
+  0% {
+    margin-left: 0;
+  }
+  100% {
+    margin-left: -10%;
+  }
+}
+#reset {
+  position: relative;
+  margin-left: 100%;
+  margin-bottom: 10px;
+  margin-top: -30px;
+}
+
+#box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.movePause {
+  margin-left: -10%;
+  animation: slideLeftPause 0.5s;
+}
+
+@keyframes slideRightStop {
+  0% {
+    margin-left: 0;
+  }
+  100% {
+    margin-left: 10%;
+  }
+}
+.moveStop {
+  margin-left: 10%;
+  animation: slideRightStop 0.5s;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
 .icons {
+  border-radius: 50%;
   color: white;
   font-size: 28px;
 }

@@ -1,4 +1,3 @@
-
 function changeStatus (payload){
     return {
         type: 'time/status',

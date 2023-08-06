@@ -67,8 +67,8 @@ const timeSlice = createSlice({
             } catch (e) {
                 console.log(e);
             }
-            state.work = 25 * 60;
-            state.break = 5 * 60;
+            state.work = defaultState.work;
+            state.break = defaultState.break;
             state.status = 'work';
         },
         start: (state)=> {
@@ -91,10 +91,12 @@ export const store = configureStore({
         },
     });
 
-export const {setDefault, set, stop, reset, start, status} = timeSlice.actions;
 const timer = createTimerInstance(store.dispatch);
+export const {setDefault, set, stop, reset, start, status} = timeSlice.actions;
+
 
 export const selectWork = state => state.time.work;
 export const selectBreak = state => state.time.break;
 export const selectStatus = state => state.time.status;
 export const getDefault = () => (defaultState);
+

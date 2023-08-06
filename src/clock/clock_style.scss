@@ -1,6 +1,6 @@
 $backgroundColor1: linear-gradient(45deg, rgba(131, 129, 255, 0.63) , rgba(201, 189, 247, 0.9) 50%, rgba(148, 137, 190, 1) );
 $backgroundColor2: linear-gradient(45deg, rgba(172, 93, 92, 1) , rgba(224, 177, 171, 1) 50%, rgba(190, 137, 137, 1) );
-$timer-shadow: rgba(0,0,0, .4);
+$timer-shadow: rgba(0,0,0, .5);
 
 :root {
   --op: 0;
@@ -45,12 +45,26 @@ $timer-shadow: rgba(0,0,0, .4);
   flex-direction: column;
   align-items: center;
 
+  #timer-label {
+    background-color: rgba(0,0,0, 0.9);
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    margin-bottom: 6%;
+   // margin-top: -10px;
+    //-webkit-text-stroke-width: 3px;
+    -webkit-text-stroke-color: black;
+    font-weight: bold;
+    font-size: 40px;
+    color: white;
+  }
+
   #timer-box {
     margin-top: 30%;
-    margin-bottom: 10%;
+    margin-bottom: 5%;
     background-color: $timer-shadow;
     box-shadow: 4px 4px 2px 2px $timer-shadow;
-    border: 1px solid black;
+    border: 2px solid black;
     width: 250px;
     height: 250px;
     border-radius: 50%;
@@ -61,22 +75,14 @@ $timer-shadow: rgba(0,0,0, .4);
 
     #timer-left {
       margin: 0;
-      -webkit-text-stroke-width: 1.5px;
+      margin-top: -10%;
+      -webkit-text-stroke-width: 2.5px;
       -webkit-text-stroke-color: black;
         color: white;
-      font-size: 40px;
-      font-weight: bold;
+      font-size: 55px;
+      font-weight: bolder;
       font-family: Inter, sans-serif;
       //font-size: larger;
-    }
-
-    #timer-label {
-        margin: 0;
-      -webkit-text-stroke-width: 1.2px;
-      -webkit-text-stroke-color: black;
-      font-weight: bolder;
-        font-size: 30px;
-      color: white;
     }
   }
 
@@ -109,10 +115,73 @@ $timer-shadow: rgba(0,0,0, .4);
   }
 
 }
+#start-stop {
+  .icons {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    color: black;
+    padding: 10px;
+    background-color: rgba(white, .50);
+    width: 35px;
+    height: 35px;
+  }
+}
+
+@keyframes  slideLeftPause{
+  0% {
+    margin-left: 0;
+  }
+  100% {
+    margin-left: -10%;
+  }
+}
+
+#reset {
+  position: relative;
+  margin-left: 100%;
+  margin-bottom: 10px;
+  margin-top: -30px;
+}
+
+
+#box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.movePause {
+  margin-left: -10%;
+  animation: slideLeftPause 0.5s;
+}
+
+
+
+@keyframes  slideRightStop{
+  0% {
+    margin-left: 0;
+  }
+  100% {
+    margin-left: 10%;
+  }
+}
+
+.moveStop {
+  margin-left: 10%;
+  animation: slideRightStop 0.5s;
+}
+
+.invisible{
+  visibility: hidden;
+}
+
+
 
 
 .icons {
-
+  border-radius: 50%;
   color: white;
   font-size: 28px;
 }

@@ -14,7 +14,7 @@ import {
 } from "../redux/state_management";
 import './clock_style.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faArrowDown, faArrowUp, faPause, faPlay, faStop} from "@fortawesome/free-solid-svg-icons";
+import {faArrowDown, faArrowRotateLeft, faArrowUp, faPause, faPlay, faStop} from "@fortawesome/free-solid-svg-icons";
 import { createContext } from 'react';
 const propsContext = createContext({});
 function useConvertToMinutes(time)
@@ -53,27 +53,64 @@ function Body ({children}) {
     );
 }
 
+function StartStop () {
+    const context = useContext(propsContext);
+    const {dispatch,status,workTime,breakTime, defaultVal} = context;
+
+    return (
+        <div onClick={
+            () => {
+                if(TimerInstance.isRunning())
+                    dispatch(start());
+                else
+                    dispatch(stop());
+            }
+        } id="start-stop">
+            <FontAwesomeIcon id={"start"}  onClick={() => {
+
+                document.getElementById('start').classList.add('invisible');
+                const pause = document.getElementById('pause');
+                if (pause != null) {
+                    document.getElementById('start').classList.add('movePause');
+                    pause.classList.remove('invisible');
+                    pause.classList.add('movePause');
+
+                }
+                const stop = document.getElementById('stop');
+                if(stop != null) {
+                    stop.classList.remove('invisible');
+                    stop.classList.add('moveStop');
+                }
+                dispatch(start());
+            }} className="icons" icon={faPlay} />
+            <FontAwesomeIcon id={"pause"}  onClick={() => {
+                document.getElementById('pause').classList.add('invisible');
+                const resume = document.getElementById('start');
+                if (resume != null) {
+                    document.getElementById('start').classList.remove('invisible');
+                }
+                dispatch(stop());
+            }}  className="icons invisible" icon={faPause} />
+            <FontAwesomeIcon id={"stop"} onClick={() => {
+                document.getElementById('start').classList.remove('invisible');
+                document.getElementById('start').classList.remove('movePause');
+                document.getElementById('pause').classList.remove('movePause');
+                document.getElementById('pause').classList.add('invisible');
+                document.getElementById('stop').classList.add('invisible');
+                document.getElementById('stop').classList.remove('moveStop');
+                dispatch(reset());
+            }} className="icons invisible" icon={faStop} />
+        </div>
+    );
+}
+
 function TimerBox() {
     const context = useContext(propsContext);
     const {dispatch,status,workTime,breakTime, defaultVal} = context;
     return (
         <div id="timer-box">
-            <p id="timer-label">{useSelector(selectStatus)}</p>
             <p id={"timer-left"}>{useConvertToMinutes( status == 'work' ? workTime:breakTime)}</p>
-            <div onClick={
-                () => {
-                    if(!TimerInstance.isRunning())
-                        dispatch(start());
-                    else
-                        dispatch(stop());
-                }
-            } id="start-stop"><FontAwesomeIcon className="icons" icon={faPlay} /><FontAwesomeIcon  className="icons" icon={faPause} /></div>
-            <div onClick={
-                () => {
-                    dispatch(reset())
-                    dispatch(setDefault({work: 25 * 60, breakTime: 5 * 60}));
-                }
-            } id={"reset"}><FontAwesomeIcon className="icons" icon={faStop} /></div>
+            <StartStop/>
         </div>
     );
 }
@@ -109,7 +146,16 @@ export function Clock () {
            <propsContext.Provider value={context}>
            <div id="background">
            <Body>
+               <div id={"box"}>
                <TimerBox/>
+               <div onClick={
+                   () => {
+                       dispatch(reset())
+                       dispatch(setDefault({work: 25 * 60, breakTime: 5 * 60}));
+                   }
+               } id={"reset"}><FontAwesomeIcon className="icons" icon={faArrowRotateLeft} /></div>
+               </div>
+               <p id="timer-label">{status.toUpperCase()}</p>
                <Label type={"session"}
                       dispatchInc={()=>{dispatch(setDefault({work: defaultVal().work+60, breakTime: defaultVal().break}))}}
                       dispatchDec={()=>{dispatch(setDefault({work: defaultVal().work-60, breakTime: defaultVal().break}))}}
