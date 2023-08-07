@@ -114,8 +114,8 @@
 #start-stop .icons {
   position: absolute;
   left: 50%;
-  top: 30%;
-  transform: translate(-50%, 20%);
+  transform: translate(-50%, 0%);
+  margin-top: -30%;
   color: black;
   padding: 10px;
   background-color: rgba(255, 255, 255, 0.5);
@@ -174,7 +174,7 @@
   font-size: 28px;
 }
 
-@media screen and (min-width: 588px) {
+@media screen and (min-width: 450px) {
   @keyframes slideLeftPause {
     0% {
       margin-left: 0;
@@ -198,6 +198,9 @@
   .moveStop {
     margin-left: 5%;
     animation: slideRightStop 0.5s;
+  }
+  #start-stop .icons {
+    margin-top: -12%;
   }
 }
 @media screen and (min-width: 1035px) {
@@ -226,7 +229,7 @@
     animation: slideRightStop 0.5s;
   }
   #start-stop .icons {
-    top: 28%;
+    margin-top: -7%;
   }
   .label-name {
     margin-left: 10%;
