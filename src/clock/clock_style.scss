@@ -2,6 +2,14 @@ $backgroundColor1: linear-gradient(45deg, rgba(131, 129, 255, 0.63) , rgba(201, 
 $backgroundColor2: linear-gradient(45deg, rgba(172, 93, 92, 1) , rgba(224, 177, 171, 1) 50%, rgba(190, 137, 137, 1) );
 $timer-shadow: rgba(0,0,0, .5);
 
+@mixin text-stroke() {
+  text-shadow:
+          -2px -2px 0 #000,
+          2px -2px 0 #000,
+          -2px 2px 0 #000,
+          2px 2px 0 #000;
+}
+
 :root {
   --op: 0;
 }
@@ -85,8 +93,7 @@ $timer-shadow: rgba(0,0,0, .5);
     #timer-left {
       margin: 0;
       margin-top: -10%;
-      -webkit-text-stroke-width: 2.5px;
-      -webkit-text-stroke-color: black;
+      @include text-stroke();
         color: white;
       font-size: 55px;
       font-weight: bolder;
@@ -237,6 +244,7 @@ $timer-shadow: rgba(0,0,0, .5);
   #start-stop{
     .icons{
       margin-top: -12%;
+
     }
   }
 
